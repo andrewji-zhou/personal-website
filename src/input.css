@@ -1,1 +1,92 @@
 @import "tailwindcss";
+
+#navbar {
+  padding-block: 0.75rem;
+  background-color: rgb(255 255 255 / 0.95);
+  transition: background-color 0.3s, backdrop-filter 0.3s;
+}
+
+#navbar .nav-content {
+  transition: opacity 0.3s;
+}
+
+#navbar [aria-current="true"] {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Unfocused: compact, translucent and blurred so the content stands out. */
+#navbar[data-focused="false"] {
+  background-color: rgb(255 255 255 / 0.4);
+  backdrop-filter: blur(8px);
+}
+
+#navbar[data-focused="false"] .nav-content {
+  opacity: 0.5;
+}
+
+/* Refocus on hover, but only on devices that can really hover. */
+@media (hover: hover) {
+  #navbar[data-focused="false"]:hover {
+    background-color: rgb(255 255 255 / 0.95);
+    backdrop-filter: none;
+  }
+
+  #navbar[data-focused="false"]:hover .nav-content {
+    opacity: 1;
+  }
+
+  #navbar a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
+/* Keyboard users can't hover, so focus inside the bar refocuses it too. */
+#navbar:focus-within {
+  background-color: rgb(255 255 255 / 0.95);
+  backdrop-filter: none;
+}
+
+#navbar:focus-within .nav-content {
+  opacity: 1;
+}
+
+/* Below Tailwind's md breakpoint (768px) the tabs become a dropdown under the bar. */
+@media (max-width: 767.98px) {
+  #navbar #nav-menu {
+    position: absolute;
+    top: 100%;
+    inset-inline: 0;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0;
+    padding: 0.5rem 1.5rem 1rem;
+    font-size: 1rem;
+    text-align: right;
+    background-color: rgb(255 255 255 / 0.95);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-0.5rem);
+    transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+  }
+
+  #navbar #nav-menu a {
+    padding-block: 0.5rem;
+  }
+
+  #navbar[data-menu-open="true"] #nav-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #navbar,
+  #navbar .nav-content,
+  #navbar #nav-menu {
+    transition: none;
+  }
+}
