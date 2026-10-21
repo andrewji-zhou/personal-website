@@ -1,4 +1,4 @@
-// Fraction of the screen height used for both the top dead zone and the bottom override.
+// Fraction of the screen height near the page bottom where the last section takes over.
 const EDGE_FRACTION = 0.15;
 
 const bar = document.getElementById("navbar");
@@ -31,11 +31,11 @@ function setMenuOpen(open) {
 // What the user can see right now: hovering counts only on devices that can hover.
 function looksFocused() {
   if (bar.dataset.focused === "true") return true;
-  return canHover.matches && (bar.matches(":hover") || bar.matches(":focus-within"));
+  return canHover.matches && (bar.matches(":hover") || bar.matches(":has(:focus-visible)"));
 }
 
 function isPastTop() {
-  return window.scrollY > window.innerHeight * EDGE_FRACTION;
+  return window.scrollY > 0;
 }
 
 function isNearBottom() {
@@ -104,8 +104,10 @@ bar.addEventListener(
 
 toggle.addEventListener("click", () => setMenuOpen(!isMenuOpen()));
 
-menu.addEventListener("click", (event) => {
-  if (event.target.closest("a")) setMenuOpen(false);
+// Any click inside the bar except on the menu button closes the menu: a link in it, or empty
+// space beside it.
+bar.addEventListener("click", (event) => {
+  if (!toggle.contains(event.target)) setMenuOpen(false);
 });
 
 document.addEventListener("keydown", (event) => {
