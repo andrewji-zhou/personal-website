@@ -1,1 +1,143 @@
 @import "tailwindcss";
+
+#navbar {
+  /* How far below the bar the blur and tint reach before fading out completely. */
+  --blur-zone: 1rem;
+  padding-block: 0.75rem 0.25rem;
+}
+
+/* The tint is its own layer so a gradient mask can fade it out across the blur zone
+   without fading the text. */
+#navbar::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 calc(var(--blur-zone) * -1);
+  z-index: -1;
+  pointer-events: none;
+  background-color: rgb(255 255 255 / 0.95);
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--blur-zone)), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - var(--blur-zone)), transparent);
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Progressive blur: stacked layers, each a weaker blur than the one before and masked to
+   a band further below the bar, so the blur eases out instead of stopping at one edge.
+   In the masks, `100% - var(--blur-zone) * x` is a point x of the way back up from the end
+   of the zone: 1 is the bottom of the bar, 0 is the end of the zone. */
+#navbar .blur-zone {
+  position: absolute;
+  inset: 0 0 calc(var(--blur-zone) * -1);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* The blur is always on and never animated. The tint above it is what fades: nearly opaque
+   when focused, so it hides the blur, and see-through when unfocused, so content shows
+   through already blurred. Fading the blur itself would let sharp content ghost through
+   halfway. */
+#navbar .blur-zone span {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(var(--b));
+}
+
+#navbar .blur-zone span:nth-child(1) {
+  --b: 8px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--blur-zone) * 1), #000 calc(100% - var(--blur-zone) * 0.7), transparent calc(100% - var(--blur-zone) * 0.55));
+  mask-image: linear-gradient(to bottom, #000 calc(100% - var(--blur-zone) * 1), #000 calc(100% - var(--blur-zone) * 0.7), transparent calc(100% - var(--blur-zone) * 0.55));
+}
+
+#navbar .blur-zone span:nth-child(2) {
+  --b: 3px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent calc(100% - var(--blur-zone) * 0.7), #000 calc(100% - var(--blur-zone) * 0.55), #000 calc(100% - var(--blur-zone) * 0.4), transparent calc(100% - var(--blur-zone) * 0.25));
+  mask-image: linear-gradient(to bottom, transparent calc(100% - var(--blur-zone) * 0.7), #000 calc(100% - var(--blur-zone) * 0.55), #000 calc(100% - var(--blur-zone) * 0.4), transparent calc(100% - var(--blur-zone) * 0.25));
+}
+
+#navbar .blur-zone span:nth-child(3) {
+  --b: 1px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent calc(100% - var(--blur-zone) * 0.4), #000 calc(100% - var(--blur-zone) * 0.25), #000 calc(100% - var(--blur-zone) * 0.1), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent calc(100% - var(--blur-zone) * 0.4), #000 calc(100% - var(--blur-zone) * 0.25), #000 calc(100% - var(--blur-zone) * 0.1), transparent 100%);
+}
+
+#navbar .nav-content {
+  transition: opacity 0.3s ease-in-out;
+}
+
+#navbar [aria-current="true"] {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Unfocused: compact, translucent and blurred so the content stands out. */
+#navbar[data-focused="false"]::before {
+  background-color: rgb(255 255 255 / 0.4);
+}
+
+#navbar[data-focused="false"] .nav-content {
+  opacity: 0.5;
+}
+
+/* Refocus on hover, but only on devices that can really hover. */
+@media (hover: hover) {
+  #navbar[data-focused="false"]:hover::before {
+    background-color: rgb(255 255 255 / 0.95);
+  }
+
+  #navbar[data-focused="false"]:hover .nav-content {
+    opacity: 1;
+  }
+
+  #navbar a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
+/* Keyboard users can't hover, so keyboard focus inside the bar refocuses it too. A tap or
+   click focuses an element without matching :focus-visible, so it doesn't hold the bar open. */
+#navbar:has(:focus-visible)::before {
+  background-color: rgb(255 255 255 / 0.95);
+}
+
+#navbar:has(:focus-visible) .nav-content {
+  opacity: 1;
+}
+
+/* Below Tailwind's md breakpoint (768px) the tabs become a dropdown under the bar. */
+@media (max-width: 767.98px) {
+  #navbar #nav-menu {
+    position: absolute;
+    top: 100%;
+    inset-inline: 0;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0;
+    padding: 0.5rem 1.5rem 1rem;
+    font-size: 1rem;
+    text-align: right;
+    background-color: rgb(255 255 255 / 0.95);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-0.5rem);
+    transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+  }
+
+  #navbar #nav-menu a {
+    padding-block: 0.5rem;
+  }
+
+  #navbar[data-menu-open="true"] #nav-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #navbar::before,
+  #navbar .nav-content,
+  #navbar #nav-menu {
+    transition: none;
+  }
+}

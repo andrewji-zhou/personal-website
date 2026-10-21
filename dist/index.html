@@ -1,20 +1,104 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="bg-white motion-safe:scroll-smooth">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Personal Website</title>
     <link rel="stylesheet" href="./output.css" />
+    <script src="./nav.js" defer></script>
   </head>
-  <body>
-    <header></header>
+  <body class="bg-white text-slate-900">
+    <header
+      id="navbar"
+      data-focused="true"
+      data-menu-open="false"
+      class="fixed inset-x-0 top-0 z-50"
+    >
+      <div class="blur-zone" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div
+        class="mx-auto flex max-w-4xl items-start justify-between gap-4 px-6"
+      >
+      <a href="#home" class="nav-content min-w-0 font-semibold">
+        Your Name<span id="nav-sep" hidden> / </span
+        ><span id="nav-section"></span>
+      </a>
+      <button
+        id="nav-toggle"
+        type="button"
+        class="nav-content -my-2 -mr-2 p-2 md:hidden"
+        aria-label="Menu"
+        aria-expanded="false"
+        aria-controls="nav-menu"
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <nav id="nav-menu" class="nav-content flex gap-5 text-sm leading-6">
+        <a href="#about">About</a>
+        <a href="#education">Education</a>
+        <a href="#experience">Experience</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      </div>
+    </header>
     <main>
-      <section id="home"><h1 class="text-4xl font-bold">Home</h1></section>
-      <section id="about"><h2 class="text-3xl font-bold">About me</h2></section>
-      <section id="education"><h2 class="text-3xl font-bold">Education</h2></section>
-      <section id="experience"><h2 class="text-3xl font-bold">Work experience</h2></section>
-      <section id="projects"><h2 class="text-3xl font-bold">Projects</h2></section>
-      <section id="contact"><h2 class="text-3xl font-bold">Contact</h2></section>
+      <section id="home" data-label="Home" class="min-h-screen scroll-mt-16">
+        <div class="mx-auto max-w-4xl px-6">
+          <h1 class="text-4xl font-bold">Home</h1>
+        </div>
+      </section>
+      <section id="about" data-label="About" class="min-h-[70vh] scroll-mt-16">
+        <div class="mx-auto max-w-4xl px-6">
+          <h2 class="text-3xl font-bold">About me</h2>
+        </div>
+      </section>
+      <section
+        id="education"
+        data-label="Education"
+        class="min-h-[70vh] scroll-mt-16"
+      >
+        <div class="mx-auto max-w-4xl px-6">
+          <h2 class="text-3xl font-bold">Education</h2>
+        </div>
+      </section>
+      <section
+        id="experience"
+        data-label="Experience"
+        class="min-h-[70vh] scroll-mt-16"
+      >
+        <div class="mx-auto max-w-4xl px-6">
+          <h2 class="text-3xl font-bold">Work experience</h2>
+        </div>
+      </section>
+      <section
+        id="projects"
+        data-label="Projects"
+        class="min-h-[70vh] scroll-mt-16"
+      >
+        <div class="mx-auto max-w-4xl px-6">
+          <h2 class="text-3xl font-bold">Projects</h2>
+        </div>
+      </section>
+      <section
+        id="contact"
+        data-label="Contact"
+        class="min-h-[40vh] scroll-mt-16"
+      >
+        <div class="mx-auto max-w-4xl px-6">
+          <h2 class="text-3xl font-bold">Contact</h2>
+        </div>
+      </section>
     </main>
   </body>
 </html>
