@@ -71,7 +71,7 @@ html {
   background-color: color-mix(in srgb, var(--paper) 95%, transparent);
   -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--blur-zone)), transparent);
   mask-image: linear-gradient(to bottom, #000 calc(100% - var(--blur-zone)), transparent);
-  transition: background-color 0.3s ease-in-out;
+  transition: background-color 0.15s ease-in-out;
 }
 
 /* Progressive blur: stacked layers, each a weaker blur than the one before and masked to
@@ -114,7 +114,7 @@ html {
 }
 
 #navbar .nav-content {
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.15s ease-in-out;
 }
 
 #navbar [aria-current="true"] {
