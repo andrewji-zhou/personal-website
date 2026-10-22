@@ -1,9 +1,63 @@
 @import "tailwindcss";
 
+/* Every color on the site comes from these variables, so a dark theme is one block that
+   overrides them. `data-theme` on <html> is set by the script in the page head and the toggle. */
+:root {
+  --paper: #f9f1e1;
+  --card: #fffaef;
+  --line: #eadfc9;
+  --ink: #0f172a;
+  --accent: #3d8b5e;
+  /* Deeper than the accent so thin outlines hold against the light background. */
+  --accent-line: #2f7650;
+  --shadow-soft: rgb(15 23 42 / 0.08);
+  /* Hover glow: a green tint in light mode, matching the light halo in dark mode. */
+  --shadow-strong: rgb(61 139 94 / 0.3);
+}
+
+/* Dark gray, not black. Shadows turn into a faint light glow, since a dark shadow would vanish. */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #1e1f22;
+  --card: #27292d;
+  --line: #3a3d42;
+  --ink: #e9e6e0;
+  --accent: #ff9a52;
+  --accent-line: #ff9a52;
+  --shadow-soft: rgb(255 255 255 / 0.06);
+  --shadow-strong: rgb(255 255 255 / 0.12);
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-accent: var(--accent);
+  --color-card: var(--card);
+}
+
+/* Self-hosted so the font loads from the same place as the page: no extra server to contact.
+   One variable file covers every weight; `swap` shows fallback text until it arrives. */
+@font-face {
+  font-family: "Source Serif 4";
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url("./fonts/source-serif-4-latin-wght-normal.woff2") format("woff2-variations");
+}
+
+@theme {
+  --font-sans: "Source Serif 4", ui-serif, Georgia, serif;
+}
+
+/* Tailwind sizes in rem, so this one value scales all text (and rem-based spacing) together. */
+html {
+  font-size: 118.75%;
+}
+
 #navbar {
   /* How far below the bar the blur and tint reach before fading out completely. */
   --blur-zone: 1rem;
-  padding-block: 0.75rem 0.25rem;
+  padding-block: 0.85rem 0.3rem;
 }
 
 /* The tint is its own layer so a gradient mask can fade it out across the blur zone
@@ -14,7 +68,7 @@
   inset: 0 0 calc(var(--blur-zone) * -1);
   z-index: -1;
   pointer-events: none;
-  background-color: rgb(255 255 255 / 0.95);
+  background-color: color-mix(in srgb, var(--paper) 95%, transparent);
   -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--blur-zone)), transparent);
   mask-image: linear-gradient(to bottom, #000 calc(100% - var(--blur-zone)), transparent);
   transition: background-color 0.15s ease-in-out;
@@ -64,6 +118,7 @@
 }
 
 #navbar [aria-current="true"] {
+  color: var(--accent);
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 4px;
@@ -71,7 +126,7 @@
 
 /* Unfocused: compact, translucent and blurred so the content stands out. */
 #navbar[data-focused="false"]::before {
-  background-color: rgb(255 255 255 / 0.4);
+  background-color: color-mix(in srgb, var(--paper) 40%, transparent);
 }
 
 #navbar[data-focused="false"] .nav-content {
@@ -81,7 +136,7 @@
 /* Refocus on hover, but only on devices that can really hover. */
 @media (hover: hover) {
   #navbar[data-focused="false"]:hover::before {
-    background-color: rgb(255 255 255 / 0.95);
+    background-color: color-mix(in srgb, var(--paper) 95%, transparent);
   }
 
   #navbar[data-focused="false"]:hover .nav-content {
@@ -97,7 +152,7 @@
 /* Keyboard users can't hover, so keyboard focus inside the bar refocuses it too. A tap or
    click focuses an element without matching :focus-visible, so it doesn't hold the bar open. */
 #navbar:has(:focus-visible)::before {
-  background-color: rgb(255 255 255 / 0.95);
+  background-color: color-mix(in srgb, var(--paper) 95%, transparent);
 }
 
 #navbar:has(:focus-visible) .nav-content {
@@ -106,17 +161,23 @@
 
 /* Below Tailwind's md breakpoint (768px) the tabs become a dropdown under the bar. */
 @media (max-width: 767.98px) {
+  /* A small floating panel under the menu icon: fully rounded and outlined so it reads as its
+     own element, not a piece of the bar. Solid, so the bar's faded edge doesn't show through. */
   #navbar #nav-menu {
     position: absolute;
-    top: 100%;
-    inset-inline: 0;
+    top: calc(100% + 0.25rem);
+    right: 0.5rem;
+    width: max-content;
     flex-direction: column;
     align-items: flex-end;
     gap: 0;
-    padding: 0.5rem 1.5rem 1rem;
-    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 1.125rem;
     text-align: right;
-    background-color: rgb(255 255 255 / 0.95);
+    background-color: var(--paper);
+    border: 1px solid var(--accent-line);
+    border-radius: 0.75rem;
+    box-shadow: 0 12px 28px var(--shadow-strong);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-0.5rem);
@@ -134,7 +195,121 @@
   }
 }
 
+/* Project cards: one box (border, rounded corners, clipped image), so the hover lift applies to
+   the picture and text together. Hover devices only. */
+.project-card {
+  font-weight: 300;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background-color: var(--card);
+  box-shadow: 0 2px 8px var(--shadow-soft);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out,
+    border-color 0.2s ease-in-out;
+}
+
+@media (hover: hover) {
+  .project-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-line);
+    box-shadow: 0 12px 28px var(--shadow-strong);
+  }
+}
+
+/* Copyable email: the address stays in place (and selectable) underneath. On hover or focus it
+   fades out and a label fades in on top, so highlighting always selects the real address. */
+.copy-email {
+  display: inline-grid;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.copy-email-address,
+.copy-email-label {
+  grid-area: 1 / 1;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.copy-email-label {
+  color: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.copy-email:focus-visible .copy-email-address,
+.copy-email:not([data-state="idle"]) .copy-email-address {
+  opacity: 0;
+}
+
+.copy-email:focus-visible .copy-email-label,
+.copy-email:not([data-state="idle"]) .copy-email-label {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .copy-email:hover .copy-email-address {
+    opacity: 0;
+  }
+
+  .copy-email:hover .copy-email-label {
+    opacity: 1;
+  }
+}
+
+/* While the theme flips, theme.js puts this class on <html> for a moment so every color
+   change animates together. It isn't always on, or hover effects and the scroll tint would
+   slow down too. !important so it wins over each element's own transition for that moment. */
+html.theme-switching,
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease,
+    box-shadow 0.25s ease, fill 0.25s ease, stroke 0.25s ease !important;
+}
+
+/* Touch devices only. `color` is inherited, so with a color transition on every element each
+   child restarts its fade every frame as its parent's color changes, and the text lags behind.
+   Here only the elements that set a color transition it; everything else follows its parent. */
+@media (hover: none) {
+  html.theme-switching,
+  html.theme-switching *,
+  html.theme-switching *::before,
+  html.theme-switching *::after {
+    transition: background-color 0.25s ease, border-color 0.25s ease,
+      box-shadow 0.25s ease, fill 0.25s ease, stroke 0.25s ease !important;
+  }
+
+  html.theme-switching body,
+  html.theme-switching .text-accent,
+  html.theme-switching .copy-email-label,
+  html.theme-switching #navbar [aria-current="true"] {
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease,
+      box-shadow 0.25s ease, fill 0.25s ease, stroke 0.25s ease !important;
+  }
+}
+
+/* Theme toggle: show the moon in light mode (go dark) and the sun in dark mode (go light). */
+#theme-toggle .icon-sun {
+  display: none;
+}
+
+html[data-theme="dark"] #theme-toggle .icon-sun {
+  display: block;
+}
+
+html[data-theme="dark"] #theme-toggle .icon-moon {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .project-card,
+  .copy-email-address,
+  .copy-email-label {
+    transition: none;
+  }
+
   #navbar::before,
   #navbar .nav-content,
   #navbar #nav-menu {
