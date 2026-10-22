@@ -258,6 +258,38 @@ html {
   }
 }
 
+/* While the theme flips, theme.js puts this class on <html> for a moment so every color
+   change animates together. It isn't always on, or hover effects and the scroll tint would
+   slow down too. !important so it wins over each element's own transition for that moment. */
+html.theme-switching,
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease,
+    box-shadow 0.25s ease, fill 0.25s ease, stroke 0.25s ease !important;
+}
+
+/* Touch devices only. `color` is inherited, so with a color transition on every element each
+   child restarts its fade every frame as its parent's color changes, and the text lags behind.
+   Here only the elements that set a color transition it; everything else follows its parent. */
+@media (hover: none) {
+  html.theme-switching,
+  html.theme-switching *,
+  html.theme-switching *::before,
+  html.theme-switching *::after {
+    transition: background-color 0.25s ease, border-color 0.25s ease,
+      box-shadow 0.25s ease, fill 0.25s ease, stroke 0.25s ease !important;
+  }
+
+  html.theme-switching body,
+  html.theme-switching .text-accent,
+  html.theme-switching .copy-email-label,
+  html.theme-switching #navbar [aria-current="true"] {
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease,
+      box-shadow 0.25s ease, fill 0.25s ease, stroke 0.25s ease !important;
+  }
+}
+
 /* Theme toggle: show the moon in light mode (go dark) and the sun in dark mode (go light). */
 #theme-toggle .icon-sun {
   display: none;
